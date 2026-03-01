@@ -45,9 +45,11 @@ function Login({ user, setPage }) {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="email">
+    <div className="page-container">
+      <div className="content-card">
+        <h2>🔑 Login</h2>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email Address</label>
           <input
             type="email"
             id="email"
@@ -56,9 +58,9 @@ function Login({ user, setPage }) {
             onChange={handleChange}
             placeholder="Enter your email"
           />
-        </label>
-        <p>{errors.email}</p>
-        <label htmlFor="password">
+          {errors.email && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.email}</p>}
+          
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -67,11 +69,14 @@ function Login({ user, setPage }) {
             onChange={handleChange}
             placeholder="Enter your password"
           />
-        </label>
-        <p>{errors.password}</p>
+          {errors.password && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.password}</p>}
 
-        <button>Login</button>
-      </form>
+          <button style={{marginTop: '20px', width: '100%'}}>🚀 Login</button>
+        </form>
+        <p style={{textAlign: 'center', marginTop: '20px', color: '#6b7280'}}>
+          Don't have an account? <a href="#" onClick={() => setPage("register")} style={{color: '#3b82f6', textDecoration: 'none'}}>Register here</a>
+        </p>
+      </div>
     </div>
   );
 }

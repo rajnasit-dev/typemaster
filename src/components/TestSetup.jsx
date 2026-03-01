@@ -7,11 +7,10 @@ function TestSetup({ setPage, setTime, time }) {
   };
 
   return (
-    <div className="setup">
-      <h2>Select Duration</h2>
-      <div className="setup-box">
-        <label>Choose Test Duration</label>
-
+    <div className="page-container">
+      <div className="content-card">
+        <h2>⏱️ Select Duration</h2>
+        <p>Choose how long you want to practice:</p>
         <div className="selecttime">
           <TimeBox value={15} time={time} setTime={setTime} />
           <TimeBox value={30} time={time} setTime={setTime} />
@@ -19,10 +18,9 @@ function TestSetup({ setPage, setTime, time }) {
         </div>
 
         <div className="setup-buttons">
-          <button onClick={startTest} setPage={()=>{setPage("test")}}>Start Test</button>
-
-          <button  className="btn" onClick={() => setPage("home")}>
-            Back
+          <button onClick={startTest}>🎯 Start Test</button>
+          <button className="btn" onClick={() => setPage("home")}>
+            ← Back
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-function Register({setUser}) {
+function Register({setUser, setPage}) {
 
   const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
@@ -15,6 +15,7 @@ function Register({setUser}) {
     setErrors(validate(formData));
     if (Object.keys(validate(formData)).length === 0) {
       setUser({ email: formData.email, password: formData.password });
+      setPage("test");
     }
   }
 
@@ -47,9 +48,11 @@ function Register({setUser}) {
     return errors;
   }
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="email">
+    <div className="page-container">
+      <div className="content-card">
+        <h2>📝 Create Account</h2>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email Address</label>
           <input
             type="email"
             id="email"
@@ -58,9 +61,9 @@ function Register({setUser}) {
             onChange={handleChange}
             placeholder="Enter your email"
           />
-        </label>
-        <p>{errors.email}</p>
-        <label htmlFor="password">
+          {errors.email && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.email}</p>}
+          
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -69,21 +72,25 @@ function Register({setUser}) {
             onChange={handleChange}
             placeholder="Enter your password"
           />
-        </label>
-        <p>{errors.password}</p>
-        <label htmlFor="confirm-password">
+          {errors.password && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.password}</p>}
+          
+          <label htmlFor="confirm-password">Confirm Password</label>
           <input
             type="password"
             id="confirm-password"
-            name="confirm-password"
+            name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
             placeholder="Re-enter your password"
           />
-        </label>
-        <p>{errors.confirmPassword}</p>
-        <button>Sign Up</button>
-      </form>
+          {errors.confirmPassword && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.confirmPassword}</p>}
+          
+          <button style={{marginTop: '20px', width: '100%'}}>✓ Sign Up</button>
+        </form>
+        <p style={{textAlign: 'center', marginTop: '20px', color: '#6b7280'}}>
+          Already have an account? <a href="#" onClick={() => setPage("login")} style={{color: '#3b82f6', textDecoration: 'none'}}>Login here</a>
+        </p>
+      </div>
     </div>
   )
 }

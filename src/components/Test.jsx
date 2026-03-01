@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import {paragraphs} from "../data/paragraphs.js";
 
-function Test() {
+function Test({setPage, setResult}) {
   const [text, setText] = useState("");
   const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [timer, setTimer] = useState(null);
-  const [result, setResult] = useState(null);
+  const [result, setResultLocal] = useState(null);
   const [resultHistory, setResultHistory] = useState([]);
   const inputRef = useRef(null);
 
@@ -21,8 +21,8 @@ function Test() {
     setInput("");
     setStartTime(null);
     setEndTime(null);
-    setTimer(10);
-    inputRef.current.focus();
+    setTimer(30);
+    inputRef.current?.focus();
   };
 
   useEffect(() => {
@@ -90,47 +90,93 @@ function Test() {
   };
 
   return (
-    <div className="">
-      <h1>💻 Test by TypeMaster</h1>
-      <p className="timer">Time Left: {timer}</p>
-      <div className="box">
-        <p className="paragraph">{getHighlightedText()}</p>
+    <div className="page-container">
+      <div className="content-card" style={{maxWidth: '800px'}}>
+        <h1 style={{fontSize: '24px', marginBottom: '20px'}}>💻 Typing Test</h1>
+        <div style={{
+          background: '#f0f9ff',
+          padding: '15px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          textAlign: 'center',
+          fontSize: '36px',
+          fontWeight: 'bold',
+          color: timer < 10 ? '#dc2626' : '#3b82f6'
+        }}>
+          ⏱️ {timer}s
+        </div>
+
+        <div style={{
+          background: '#f9fafb',
+          padding: '20px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          minHeight: '120px',
+          lineHeight: '1.8',
+          fontSize: '16px',
+          color: '#374151',
+          border: '1px solid #e5e7eb'
+        }} className="paragraph">
+          {getHighlightedText()}
+        </div>
+
         <textarea
           ref={inputRef}
-          className="input"
-          placeholder="Start Typing here ..."
+          style={{
+            width: '100%',
+            minHeight: '100px',
+            padding: '15px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            background: '#ffffff',
+            color: '#1f2937',
+            fontSize: '15px',
+            fontFamily: 'monospace',
+            boxSizing: 'border-box',
+            marginBottom: '20px'
+          }}
+          placeholder="Start typing here..."
           value={input}
           onChange={handleChange}
           disabled={result || timer === 0}
         />
+
         {result ? (
-          <div className="result">
-            <p>Speed: {result.speed} WPM</p>
-            <p>Accuracy: {result.accuracy}%</p>
-            <p>Time Taken: {result.time} seconds</p>
-            <button onClick={resetTest}>Try Again</button>
+          <div style={{
+            background: '#f0fdf4',
+            border: '1px solid #d1fae5',
+            padding: '20px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            textAlign: 'center'
+          }}>
+            <h2>✨ Test Complete!</h2>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '20px',
+              margin: '20px 0'
+            }}>
+              <div>
+                <p style={{color: '#6b7280'}}>Speed</p>
+                <p style={{fontSize: '24px', fontWeight: 'bold', margin: '0', color: '#1e40af'}}>{result.speed} WPM</p>
+              </div>
+              <div>
+                <p style={{color: '#6b7280'}}>Accuracy</p>
+                <p style={{fontSize: '24px', fontWeight: 'bold', margin: '0'}}>{result.accuracy}%</p>
+              </div>
+            </div>
+            <div style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
+              <button onClick={resetTest} style={{flex: 1}}>🔄 Try Again</button>
+              <button className="btn" onClick={() => setPage("home")} style={{flex: 1}}>🏠 Home</button>
+            </div>
           </div>
         ) : (
-          <p className="instruction">
-            Type the above paragraph to test typing speed
+          <p style={{textAlign: 'center', color: '#6b7280', fontStyle: 'italic'}}>
+            Start typing to begin the test...
           </p>
         )}
       </div>
-      {resultHistory.length > 0 && (
-        <div className="history">
-          <h2>Test History</h2>
-          <ul>
-            {resultHistory.map((res, idx) => (
-              <li key={idx}>
-                <p>
-                  <b>Speed:</b> {res.speed} WPM | <b>Accuracy:</b>{" "}
-                  {res.accuracy}% | <b>Time:</b> {res.time}s
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

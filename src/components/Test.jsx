@@ -1,27 +1,31 @@
 import React, { useState, useRef, useEffect } from "react";
 import {paragraphs} from "../data/paragraphs.js";
 
-function Test({setPage, setResult}) {
+function Test({time, setPage, setResult}) {
   const [text, setText] = useState("");
   const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [timer, setTimer] = useState(null);
-  const [result, setResultLocal] = useState(null);
-  const [resultHistory, setResultHistory] = useState([]);
   const inputRef = useRef(null);
+  const inputTextRef = useRef("");
+  const startTimeRef = useRef(null);
 
   useEffect(() => {
     resetTest();
   }, []);
 
   const resetTest = () => {
-    const random = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+    const size = time <= 15 ? "short" : time <= 30 ? "medium" : "long";
+    const list = paragraphs[size];
+    const random = list[Math.floor(Math.random() * list.length)];
     setText(random);
     setInput("");
+    inputTextRef.current = "";
     setStartTime(null);
+    startTimeRef.current = null;
     setEndTime(null);
-    setTimer(30);
+    setTimer(time || 30);
     inputRef.current?.focus();
   };
 
@@ -32,42 +36,46 @@ function Test({setPage, setResult}) {
         setTimer((prev) => prev - 1);
       }, 1000);
     }
-    if (timer === 0 && !result) {
-      calculateResult(startTime, new Date(), true);
+    if (timer === 0 && !endTime) {
+      calculateResult(startTimeRef.current, new Date(), inputTextRef.current);
     }
     return () => clearInterval(interval);
-  }, [startTime, endTime, timer, result]);
+  }, [startTime, endTime, timer]);
 
   const handleChange = (e) => {
     const val = e.target.value;
     setInput(val);
+    inputTextRef.current = val;
     if (!startTime && val.length > 0) {
       const now = new Date();
       setStartTime(now);
+      startTimeRef.current = now;
     }
     if (val === text) {
       const end = new Date();
       setEndTime(end);
-      calculateResult(startTime, end);
+      calculateResult(startTimeRef.current, end, val);
     }
   };
 
-  const calculateResult = (start, end) => {
-    const timeTaken = (end - start) / 1000; // in seconds
-    const wordsTyped = input.trim().split().length;
-    const speed = Math.round((wordsTyped / timeTaken) * 60); // WPM
-    const correctChars = input
+  const calculateResult = (start, end, typedText) => {
+    const timeTaken = (end - start) / 1000;
+    const trimmed = typedText.trim();
+    const wordsTyped = trimmed.length > 0 ? trimmed.split(/\s+/).length : 0;
+    const speed = timeTaken > 0 ? Math.round((wordsTyped / timeTaken) * 60) : 0;
+    const correctChars = typedText
       .split("")
       .filter((ch, i) => ch === text[i]).length;
-    const accuracy = Math.round((correctChars / text.length) * 100);
+    const accuracy = typedText.length > 0
+      ? Math.round((correctChars / typedText.length) * 100)
+      : 0;
 
-    const res = {
-      speed: speed,
+    setResult({
+      speed,
       accuracy,
-      time: timeTaken.toFixed(2),
-    };
-    setResult(res);
-    setResultHistory((prev) => [res, ...prev]);
+      time: Math.round(timeTaken),
+    });
+    setPage("result");
   };
 
   const getHighlightedText = () => {
@@ -92,90 +100,23 @@ function Test({setPage, setResult}) {
   return (
     <div className="page-container">
       <div className="content-card" style={{maxWidth: '800px'}}>
-        <h1 style={{fontSize: '24px', marginBottom: '20px'}}>💻 Typing Test</h1>
-        <div style={{
-          background: '#f0f9ff',
-          padding: '15px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          textAlign: 'center',
-          fontSize: '36px',
-          fontWeight: 'bold',
-          color: timer < 10 ? '#dc2626' : '#3b82f6'
-        }}>
+        <h2>💻 Typing Test</h2>
+        <div className="timer-display" style={{color: timer < 10 ? '#dc2626' : '#4f46e5'}}>
           ⏱️ {timer}s
         </div>
 
-        <div style={{
-          background: '#f9fafb',
-          padding: '20px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          minHeight: '120px',
-          lineHeight: '1.8',
-          fontSize: '16px',
-          color: '#374151',
-          border: '1px solid #e5e7eb'
-        }} className="paragraph">
+        <div className="paragraph-display">
           {getHighlightedText()}
         </div>
 
         <textarea
           ref={inputRef}
-          style={{
-            width: '100%',
-            minHeight: '100px',
-            padding: '15px',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            background: '#ffffff',
-            color: '#1f2937',
-            fontSize: '15px',
-            fontFamily: 'monospace',
-            boxSizing: 'border-box',
-            marginBottom: '20px'
-          }}
+          className="test-input"
           placeholder="Start typing here..."
           value={input}
           onChange={handleChange}
-          disabled={result || timer === 0}
+          disabled={endTime || timer === 0}
         />
-
-        {result ? (
-          <div style={{
-            background: '#f0fdf4',
-            border: '1px solid #d1fae5',
-            padding: '20px',
-            borderRadius: '8px',
-            marginBottom: '20px',
-            textAlign: 'center'
-          }}>
-            <h2>✨ Test Complete!</h2>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '20px',
-              margin: '20px 0'
-            }}>
-              <div>
-                <p style={{color: '#6b7280'}}>Speed</p>
-                <p style={{fontSize: '24px', fontWeight: 'bold', margin: '0', color: '#1e40af'}}>{result.speed} WPM</p>
-              </div>
-              <div>
-                <p style={{color: '#6b7280'}}>Accuracy</p>
-                <p style={{fontSize: '24px', fontWeight: 'bold', margin: '0'}}>{result.accuracy}%</p>
-              </div>
-            </div>
-            <div style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
-              <button onClick={resetTest} style={{flex: 1}}>🔄 Try Again</button>
-              <button className="btn" onClick={() => setPage("home")} style={{flex: 1}}>🏠 Home</button>
-            </div>
-          </div>
-        ) : (
-          <p style={{textAlign: 'center', color: '#6b7280', fontStyle: 'italic'}}>
-            Start typing to begin the test...
-          </p>
-        )}
       </div>
     </div>
   );

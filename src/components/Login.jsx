@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-
-function Login({ user, setPage }) {
+import { useState } from "react";
+function Login({ users, setUser, setPage }) {
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({ email: "", password: "" });
 
@@ -13,7 +12,15 @@ function Login({ user, setPage }) {
     e.preventDefault();
     setErrors(validate(formData));
     if (Object.keys(validate(formData)).length === 0) {
-      setPage("test");
+      const found = users.find(
+        (u) => u.email === formData.email && u.password === formData.password
+      );
+      if (found) {
+        setUser({ email: found.email });
+        setPage("home");
+      } else {
+        setErrors({ password: "Invalid email or password." });
+      }
     }
   }
 
@@ -58,7 +65,7 @@ function Login({ user, setPage }) {
             onChange={handleChange}
             placeholder="Enter your email"
           />
-          {errors.email && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.email}</p>}
+          {errors.email && <p className="error">{errors.email}</p>}
           
           <label htmlFor="password">Password</label>
           <input
@@ -69,12 +76,12 @@ function Login({ user, setPage }) {
             onChange={handleChange}
             placeholder="Enter your password"
           />
-          {errors.password && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.password}</p>}
+          {errors.password && <p className="error">{errors.password}</p>}
 
-          <button style={{marginTop: '20px', width: '100%'}}>🚀 Login</button>
+          <button>🚀 Login</button>
         </form>
-        <p style={{textAlign: 'center', marginTop: '20px', color: '#6b7280'}}>
-          Don't have an account? <a href="#" onClick={() => setPage("register")} style={{color: '#3b82f6', textDecoration: 'none'}}>Register here</a>
+        <p className="link-text">
+          Don't have an account? <a href="#" onClick={() => setPage("register")}>Register here</a>
         </p>
       </div>
     </div>

@@ -1,15 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
-function History({ setPage }) {
-  const [history, setHistory] = useState([]);
-
-  useEffect(() => {
-    // Load history from localStorage or state
-    const savedHistory = localStorage.getItem('typingHistory');
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-  }, []);
+function History({ setPage, history }) {
 
   return (
     <div className="page-container">
@@ -17,7 +8,7 @@ function History({ setPage }) {
         <h2>📈 Practice History</h2>
         {history.length > 0 ? (
           <>
-            <table style={{marginTop: '20px'}}>
+            <table>
               <thead>
                 <tr>
                   <th>Date</th>
@@ -37,16 +28,17 @@ function History({ setPage }) {
                 ))}
               </tbody>
             </table>
-            <div style={{marginTop: '30px', display: 'flex', gap: '10px'}}>
-              <button onClick={() => setPage("home")} style={{flex: 1}}>🏠 Back Home</button>
+            <div className="setup-buttons" style={{marginTop: '24px'}}>
+              <button onClick={() => setPage("practice")} style={{flex: 1}}>🚀 Practice More</button>
+              <button className="btn" onClick={() => setPage("home")} style={{flex: 1}}>🏠 Back Home</button>
             </div>
           </>
         ) : (
           <>
-            <p style={{textAlign: 'center', color: '#6b7280', marginTop: '30px'}}>
+            <p style={{textAlign: 'center', color: '#94a3b8', marginTop: '30px', lineHeight: '1.6'}}>
               No test history yet. Start practicing to see your results here!
             </p>
-            <div style={{marginTop: '30px', display: 'flex', gap: '10px'}}>
+            <div className="setup-buttons" style={{marginTop: '24px'}}>
               <button onClick={() => setPage("practice")} style={{flex: 1}}>🚀 Start Practicing</button>
               <button className="btn" onClick={() => setPage("home")} style={{flex: 1}}>🏠 Back Home</button>
             </div>

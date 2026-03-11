@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-function Register({setUser, setPage}) {
+function Register({setUser, setPage, users, setUsers}) {
 
   const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
@@ -14,8 +14,10 @@ function Register({setUser, setPage}) {
     e.preventDefault();
     setErrors(validate(formData));
     if (Object.keys(validate(formData)).length === 0) {
-      setUser({ email: formData.email, password: formData.password });
-      setPage("test");
+      const newUser = { email: formData.email, password: formData.password, history: [] };
+      setUsers((prev) => [...prev, newUser]);
+      setUser({ email: formData.email });
+      setPage("home");
     }
   }
 
@@ -26,6 +28,8 @@ function Register({setUser, setPage}) {
       errors.email = "Email is required.";
     } else if (!emailRegex.test(email)) {
       errors.email = "Please enter a valid email address.";
+    } else if (users.some((u) => u.email === email)) {
+      errors.email = "This email is already registered.";
     }
     if (!password) {
       errors.password = "Password is required.";
@@ -61,7 +65,7 @@ function Register({setUser, setPage}) {
             onChange={handleChange}
             placeholder="Enter your email"
           />
-          {errors.email && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.email}</p>}
+          {errors.email && <p className="error">{errors.email}</p>}
           
           <label htmlFor="password">Password</label>
           <input
@@ -72,7 +76,7 @@ function Register({setUser, setPage}) {
             onChange={handleChange}
             placeholder="Enter your password"
           />
-          {errors.password && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.password}</p>}
+          {errors.password && <p className="error">{errors.password}</p>}
           
           <label htmlFor="confirm-password">Confirm Password</label>
           <input
@@ -83,12 +87,12 @@ function Register({setUser, setPage}) {
             onChange={handleChange}
             placeholder="Re-enter your password"
           />
-          {errors.confirmPassword && <p style={{color: '#dc2626', marginTop: '5px'}}>{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
           
-          <button style={{marginTop: '20px', width: '100%'}}>✓ Sign Up</button>
+          <button>✓ Sign Up</button>
         </form>
-        <p style={{textAlign: 'center', marginTop: '20px', color: '#6b7280'}}>
-          Already have an account? <a href="#" onClick={() => setPage("login")} style={{color: '#3b82f6', textDecoration: 'none'}}>Login here</a>
+        <p className="link-text">
+          Already have an account? <a href="#" onClick={() => setPage("login")}>Login here</a>
         </p>
       </div>
     </div>

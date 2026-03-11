@@ -1,15 +1,11 @@
 function TimeBox({ value, time, setTime }) {
   return (
     <div
-      className="timebox"
+      className={`timebox ${time === value ? "active" : ""}`}
       onClick={() => setTime(value)}
-      style={{
-        ...(time === value && { fontWeight: "bold" }),
-      }}
     >
       {value}s
     </div>
   );
 }
-
 export default TimeBox;
